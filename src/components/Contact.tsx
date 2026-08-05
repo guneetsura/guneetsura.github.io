@@ -90,7 +90,7 @@ const Contact: React.FC = () => {
           </label>
           <input type="hidden" name="subject" value={requestType} />
           <button type="submit" disabled={status === 'submitting'} className="btn-primary disabled:opacity-60 disabled:cursor-not-allowed">
-            <Send size={16} /> {status === 'submitting' ? 'Sending?' : 'Send request'}
+            <Send size={16} /> {status === 'submitting' ? 'Sending...' : 'Send request'}
           </button>
           {status === 'success' && <p role="status" className="text-sm text-[var(--accent)]">Request sent. I&apos;ll follow up soon.</p>}
           {status === 'error' && <p role="alert" className="text-sm text-red-300">The form is not configured or could not send. Please use LinkedIn instead.</p>}
@@ -98,7 +98,7 @@ const Contact: React.FC = () => {
       </div>
 
       <div className="divider mt-24 mb-8" />
-      <p className="text-xs text-[var(--text-faint)] text-center">? {new Date().getFullYear()} Guneet Sura. Built with Next.js, Tailwind, and Framer Motion.</p>
+      <p className="text-xs text-[var(--text-faint)] text-center">Guneet Sura · {new Date().getFullYear()}. Built with Next.js, Tailwind, and Framer Motion.</p>
     </section>
   );
 };
