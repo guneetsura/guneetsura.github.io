@@ -98,7 +98,7 @@ const Contact: React.FC = () => {
       </div>
 
       <div className="divider mt-24 mb-8" />
-      <p className="text-xs text-[var(--text-faint)] text-center">Guneet Sura · {new Date().getFullYear()}. Built with Next.js, Tailwind, and Framer Motion.</p>
+      <p className="text-xs text-[var(--text-faint)] text-center">Guneet Sura. Built with ❤️ using Next.js, Tailwind, and Framer Motion.</p>
     </section>
   );
 };
