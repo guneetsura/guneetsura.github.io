@@ -28,7 +28,14 @@ const Hero: React.FC = () => {
   const reveal = (delay: number) => ({ delay, reduced: Boolean(reducedMotion) });
 
   return <section id="home" className="hero-shell relative min-h-screen flex items-center overflow-hidden">
-    <div className="hero-grid" aria-hidden="true" />
+    <motion.div className="hero-cockpit" aria-hidden="true" initial={{ opacity: 0, scale: reducedMotion ? 1 : 1.04 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: reducedMotion ? 0.01 : 1.2, ease: 'easeOut' }}>
+      <span className="hero-stars" />
+      <span className="hero-orbit hero-orbit-primary" />
+      <span className="hero-orbit hero-orbit-secondary" />
+      <span className="hero-reticle"><i /><i /><i /><i /></span>
+      <span className="hero-hud-label hero-hud-label-top">NAV // 01</span>
+      <span className="hero-hud-label hero-hud-label-bottom">COURSE LOCKED</span>
+    </motion.div>
     <div className="hero-telemetry" aria-hidden="true"><span className="font-signal">GS // 001</span><span className="hero-telemetry-line" /><span className="font-signal">VELOCITY / ONLINE</span></div>
     <div className="section !py-0 w-full relative z-10">
       <motion.p custom={reveal(0)} initial="hidden" animate="visible" variants={fadeUp} className="eyebrow mb-4 font-signal text-xs tracking-[0.18em]">
