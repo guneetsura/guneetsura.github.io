@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState, ChangeEvent, FormEvent } from 'react';
 import { motion } from 'framer-motion';
@@ -62,7 +62,7 @@ const Contact: React.FC = () => {
       <div className="grid md:grid-cols-5 gap-12">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={fadeUp} className="md:col-span-2 space-y-5">
           <p className="text-sm text-[var(--text-muted)] leading-relaxed">
-            Private contact details are intentionally not published. Use the form or connect through LinkedIn.
+            
           </p>
           <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className="btn-secondary w-fit">
             LinkedIn <ExternalLink size={15} />
