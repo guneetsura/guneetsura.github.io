@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -46,12 +46,14 @@ const Skills: React.FC = () => {
         whileInView="visible"
         viewport={{ once: true, amount: 0.3 }}
         variants={fadeUp}
-        className="flex flex-wrap gap-2 mb-10"
+        role="tablist" aria-label="Skill categories" className="flex flex-wrap gap-2 mb-10"
       >
         {skills.map((group) => (
           <button
             key={group.category}
             onClick={() => setActive(group.category)}
+             role="tab"
+             aria-selected={active === group.category}
             className={`px-4 py-2 rounded-lg text-sm transition-colors ${
               active === group.category
                 ? 'bg-[var(--accent)] text-[#14100A]'

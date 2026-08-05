@@ -1,4 +1,4 @@
-import { PortfolioData } from './types';
+﻿import { PortfolioData } from './types';
 
 export const portfolioData: PortfolioData = {
   profile: {
@@ -7,8 +7,6 @@ export const portfolioData: PortfolioData = {
     tagline:
       "I build fast, considered web products — from client sites to a production HRMS — using React, Next.js, and TypeScript.",
     location: 'Mumbai, India',
-    email: 'guneetsura@gmail.com',
-    phone: '+91-91678-22260',
     github: 'https://github.com/guneetsura',
     linkedin: 'https://linkedin.com/in/guneetsura',
     currentlyAt: 'Ad2connect',
@@ -71,6 +69,16 @@ export const portfolioData: PortfolioData = {
   ],
 
   projects: [
+     {
+       id: 'saas-growth-marketing',
+       title: 'SaaS Growth Marketing',
+       description:
+         'A production B2B SaaS growth marketing website built for Ad2connect, with structured services, case studies, and clear strategy-call conversion paths.',
+       technologies: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Framer Motion'],
+       live: 'https://saasgrowthmarketing.com',
+       featured: true,
+       award: 'Client website built at Ad2connect',
+     },
     {
       id: 'indiadatahub',
       title: 'IndiaDataHub Dashboard',

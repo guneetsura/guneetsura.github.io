@@ -1,8 +1,8 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, ArrowDown } from 'lucide-react';
+import { ArrowDown } from 'lucide-react';
 import { getProfile } from '@/lib/data-provider';
 import { portfolioData } from '@/lib/data';
 import { Profile } from '@/lib/types';
@@ -140,13 +140,6 @@ const Hero: React.FC = () => {
             aria-label="LinkedIn"
           >
             <Linkedin size={20} />
-          </a>
-          <a
-            href={`mailto:${profile.email}`}
-            className="text-[var(--text-faint)] hover:text-[var(--text)] transition-colors"
-            aria-label="Email"
-          >
-            <Mail size={20} />
           </a>
         </motion.div>
       </div>
