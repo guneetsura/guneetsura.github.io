@@ -17,8 +17,8 @@
 }
 
 @theme {
-  --font-sans: var(--font-inter), system-ui, sans-serif;
-  --font-display: var(--font-display), system-ui, sans-serif;
+  --font-sans: var(--font-ubuntu), system-ui, sans-serif;
+  --font-display: var(--font-ubuntu), system-ui, sans-serif;
 }
 
 @layer base {
@@ -143,4 +143,61 @@
   .filter-pill:hover, .filter-pill:focus-visible { border-color: var(--border-strong); color: var(--text); }
   .filter-pill-active { background: var(--accent); color: #14100A; border-color: var(--accent); }
   button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+}
+
+.font-signal { font-family: "Bitcount Prop Single", monospace; }
+
+.hero-shell {
+  background: radial-gradient(circle at 72% 38%, rgba(226, 169, 69, 0.08), transparent 28%), var(--bg);
+}
+
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.34;
+  background-image: linear-gradient(rgba(226, 169, 69, 0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(226, 169, 69, 0.06) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(to bottom, black, transparent 78%);
+}
+
+.hero-telemetry {
+  position: absolute;
+  top: 50%;
+  right: clamp(1.5rem, 8vw, 8rem);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-faint);
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  writing-mode: vertical-rl;
+  transform: translateY(-50%);
+}
+
+.hero-telemetry-line {
+  width: 1px;
+  height: 7rem;
+  background: linear-gradient(var(--accent), transparent);
+}
+
+.hero-scroll-cue {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.hero-bridge {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 8rem;
+  background: linear-gradient(to bottom, transparent, var(--bg));
+  pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  .hero-telemetry { right: 1rem; opacity: 0.7; }
+  .hero-grid { background-size: 48px 48px; }
 }

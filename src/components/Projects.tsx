@@ -19,8 +19,8 @@ const Projects: React.FC = () => {
       <p className="eyebrow mb-3">Projects</p>
       <h2 className="font-display text-3xl sm:text-4xl text-[var(--text)] mb-16">Built for the real world</h2>
     </motion.div>
-    <div className="grid sm:grid-cols-2 gap-6">
-      {projects.map((project, index) => <motion.article key={project.id} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={fadeUp} transition={{ delay: index * 0.06 }} className={`card p-6 flex flex-col ${project.id === 'saas-growth-marketing' ? 'border-[var(--accent)]/50 bg-[linear-gradient(135deg,rgba(226,169,69,0.08),transparent_45%)]' : ''}`}>
+    <div className="grid lg:grid-cols-2 gap-6">
+      {projects.map((project, index) => <motion.article key={project.id} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={fadeUp} transition={{ delay: index * 0.06 }} className={`card p-6 flex flex-col hover:-translate-y-1 ${project.id === 'saas-growth-marketing' ? 'border-[var(--accent)]/50 bg-[linear-gradient(135deg,rgba(226,169,69,0.08),transparent_45%)]' : ''}`}>
         {project.award && <div className="flex items-center gap-1.5 text-xs text-[var(--accent)] mb-3"><Trophy size={14} /><span>{project.award}</span></div>}
         <h3 className="text-lg font-medium text-[var(--text)] mb-2">{project.title}</h3>
         <p className="text-sm text-[var(--text-muted)] leading-relaxed mb-5 flex-grow">{project.description}</p>
