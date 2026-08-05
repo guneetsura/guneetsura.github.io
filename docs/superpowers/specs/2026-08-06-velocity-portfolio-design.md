@@ -26,6 +26,11 @@ Use Framer Motion for a controlled launch-sequence reveal: stagger the eyebrow, 
 
 Create one reusable SVG GS velocity monogram. The mark should combine interlocked G/S geometry, a forward-leaning cut, and one speed-line notch. Use a gold-on-graphite palette consistent with the current site. Keep the favicon simplified enough to remain legible at 16px and expose no private data. Add it as `src/app/icon.svg` so Next.js uses it for the favicon.
 
+## Typography
+
+Use Ubuntu as the primary site font for navigation, body copy, controls, and most headings. Use Bitcount Prop Single only for a very small display accent, such as the GS telemetry label or a compact hero micro-label, where its technical character reinforces the sci-fi direction without reducing readability. Load both through 
+ext/font/google and preserve the existing reduced-motion and responsive behavior.
+
 ## Back To Top
 
 Keep the floating BackToTop component, refine its placement and styling to match the new brand mark, and preserve its accessible label, smooth behavior, and reduced-motion fallback.
