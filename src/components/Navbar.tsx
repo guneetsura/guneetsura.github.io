@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
@@ -22,18 +22,34 @@ const Navbar: React.FC = () => {
       setScrolled(window.scrollY > 24);
       const height = document.documentElement.scrollHeight - window.innerHeight;
       setProgress(height > 0 ? (window.scrollY / height) * 100 : 0);
+
+      // Scrollspy logic
+      const sectionIds = ['home', ...NAV_ITEMS.map((item) => item.href.slice(1))];
+      let currentSection = 'home';
+      const triggerLine = window.innerHeight * 0.3;
+
+      for (const id of sectionIds) {
+        const element = document.getElementById(id);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          if (rect.top <= triggerLine) {
+            currentSection = id;
+          }
+        }
+      }
+
+      // If at the absolute bottom of the page, force highlight the last section (skills)
+      const isAtBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 10;
+      if (isAtBottom) {
+        currentSection = sectionIds[sectionIds.length - 1];
+      }
+
+      setActiveSection(currentSection);
     };
-    const sections = ['home', ...NAV_ITEMS.map((item) => item.href.slice(1))]
-      .map((id) => document.getElementById(id))
-      .filter((section): section is HTMLElement => Boolean(section));
-    const observer = new IntersectionObserver((entries) => {
-      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-      if (visible) setActiveSection(visible.target.id);
-    }, { rootMargin: '-25% 0px -60% 0px', threshold: [0.1, 0.3, 0.6] });
-    sections.forEach((section) => observer.observe(section));
+
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => { observer.disconnect(); window.removeEventListener('scroll', onScroll); };
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   const closeMenu = () => setMobileOpen(false);
