@@ -50,3 +50,29 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  verify:
+    needs: deploy
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Wait for Pages activation
+        run: sleep 30
+
+      - name: Check live site responds 200
+        run: |
+          status=$(curl -s -o /dev/null -w "%{http_code}" "https://guneetsura.github.io/")
+          echo "live site HTTP $status"
+          if [ "$status" != "200" ]; then exit 1; fi
+
+      - name: Check deployment state is active
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          deployment_id=$(gh api "repos/${{ github.repository }}/deployments?per_page=1" --jq '.[0].id')
+          state=$(gh api "repos/${{ github.repository }}/deployments/${deployment_id}/statuses?per_page=1" --jq '.[0].state')
+          echo "latest deployment ${deployment_id} state: ${state}"
+          if [ "${state}" != "success" ]; then
+            echo "::error::Deployment ${deployment_id} is ${state}, not active. The latest push may be serving stale content."
+            exit 1
+          fi
