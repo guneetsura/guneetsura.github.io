@@ -36,12 +36,19 @@ const Contact: React.FC = () => {
 
     setStatus('submitting');
     try {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ ...formData, requestType }),
+      const body = new URLSearchParams({
+        name: formData.name,
+        email: formData.email,
+        subject: requestType,
+        requestType,
+        message: formData.message,
       });
-      if (!response.ok) throw new Error('Request failed');
+      await fetch(endpoint, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+        body: body.toString(),
+      });
       setStatus('success');
       setFormData({ name: '', email: '', subject: '', message: '' });
     } catch {
@@ -93,7 +100,7 @@ const Contact: React.FC = () => {
             <Send size={16} /> {status === 'submitting' ? 'Sending...' : 'Send request'}
           </button>
           {status === 'success' && <p role="status" className="text-sm text-[var(--accent)]">Request sent. I&apos;ll follow up soon.</p>}
-          {status === 'error' && <p role="alert" className="text-sm text-red-300">The form is not configured or could not send. Please use LinkedIn instead.</p>}
+          {status === 'error' && <p role="alert" className="text-sm text-red-300">The form is not connected yet. Please try again shortly.</p>}
         </motion.form>
       </div>
 
