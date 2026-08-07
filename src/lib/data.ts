@@ -73,11 +73,11 @@ export const portfolioData: PortfolioData = {
        id: 'saas-growth-marketing',
        title: 'SaaS Growth Marketing',
        description:
-         'A production B2B SaaS growth marketing website built for Ad2connect, with structured services, case studies, and clear strategy-call conversion paths.',
+         'A conversion-focused B2B SaaS growth marketing platform for Ad2connect\'s dedicated SaaS vertical, bringing brand strategy, SEO, demand generation, and go-to-market services into one clear digital experience.',
        technologies: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Framer Motion'],
        live: 'https://saasgrowthmarketing.com',
        featured: true,
-       award: 'Client website built at Ad2connect',
+       context: 'Built for Ad2connect\'s SaaS vertical',
      },
     {
       id: 'indiadatahub',

@@ -29,6 +29,7 @@ export interface ProjectItem {
   live?: string;
   featured?: boolean;
   award?: string;
+  context?: string;
 }
 
 export interface SkillGroup {
