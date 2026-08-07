@@ -76,7 +76,12 @@ function getSubmissionSheet() {
     }
   }
   if (!spreadsheet) spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  if (!spreadsheet) return null;
+  if (!spreadsheet) {
+    // Standalone script with no bound sheet: create one and remember it so all
+    // future submissions (and diagnostics) reuse the same spreadsheet.
+    spreadsheet = SpreadsheetApp.create('Portfolio Contact Requests');
+    properties.setProperty(SPREADSHEET_ID_PROPERTY, spreadsheet.getId());
+  }
 
   let sheet = spreadsheet.getSheetByName('Resume requests');
   if (!sheet) sheet = spreadsheet.insertSheet('Resume requests');

@@ -5,6 +5,7 @@ The portfolio uses a Google Apps Script Web App as a free, private form backend.
 ## Requirements
 
 - The Apps Script project must be **bound to your Google Sheet**. Open the Sheet and use **Extensions > Apps Script** so `SpreadsheetApp.getActiveSpreadsheet()` resolves. A standalone script (created from script.google.com) has no spreadsheet and will fail to save.
+- If you prefer to keep a standalone script, set the script property `SPREADSHEET_ID` to your Sheet's ID (the value between `/d/` and `/edit` in the Sheet URL). **If neither is set, the script now auto-creates a spreadsheet named "Portfolio Contact Requests" on first use and stores its ID in `SPREADSHEET_ID`.**
 - To receive the notification email, set the script property `NOTIFICATION_EMAIL`. If it is missing, the script falls back to the owner of the script (the account that deployed it) via `Session.getEffectiveUser().getEmail()`.
 
 ## Deploy
