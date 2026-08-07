@@ -2,7 +2,7 @@
 
 import { useEffect, useState, ChangeEvent, FormEvent } from 'react';
 import { motion } from 'framer-motion';
-import { ExternalLink, Send } from 'lucide-react';
+import { ChevronDown, ExternalLink, Send } from 'lucide-react';
 import { getProfile } from '@/lib/data-provider';
 import { portfolioData } from '@/lib/data';
 import { Profile, ContactFormData, SubmitStatus } from '@/lib/types';
@@ -86,21 +86,24 @@ const Contact: React.FC = () => {
             </label>
           </div>
           <label className="block text-xs text-[var(--text-faint)]">Request type
-            <select value={requestType} onChange={(event) => setRequestType(event.target.value)} className="form-field mt-2">
-              <option>Resume request</option>
-              <option>Hiring conversation</option>
-              <option>Project discussion</option>
-            </select>
+            <span className="relative mt-2 block">
+              <select value={requestType} onChange={(event) => setRequestType(event.target.value)} className="form-field appearance-none cursor-pointer pr-10">
+                <option>Resume request</option>
+                <option>Hiring conversation</option>
+                <option>Project discussion</option>
+              </select>
+              <ChevronDown size={16} aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] transition-transform duration-200" />
+            </span>
           </label>
           <label className="block text-xs text-[var(--text-faint)]">Message
             <textarea name="message" required rows={5} value={formData.message} onChange={handleChange} className="form-field mt-2 resize-none" placeholder="A little context helps me reply well" />
           </label>
           <input type="hidden" name="subject" value={requestType} />
           <button type="submit" disabled={status === 'submitting'} className="btn-primary disabled:opacity-60 disabled:cursor-not-allowed">
-            <Send size={16} /> {status === 'submitting' ? 'Sending...' : 'Send request'}
+            <Send size={16} /> {status === 'submitting' ? 'Sending…' : 'Send request'}
           </button>
-          {status === 'success' && <p role="status" className="text-sm text-[var(--accent)]">Request sent. I&apos;ll follow up soon.</p>}
-          {status === 'error' && <p role="alert" className="text-sm text-red-300">The form is not connected yet. Please try again shortly.</p>}
+          {status === 'success' && <p role="status" className="text-sm text-[var(--success)]">Request sent. I&apos;ll follow up soon.</p>}
+          {status === 'error' && <p role="alert" className="text-sm text-[var(--danger)]">The form is not connected yet. Please try again shortly.</p>}
         </motion.form>
       </div>
 

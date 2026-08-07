@@ -15,8 +15,8 @@ The portfolio uses a Google Apps Script Web App as a free, private form backend.
 7. Set **Execute as** to yourself.
 8. Set **Who has access** to anyone.
 9. Copy the Web App URL ending in `/exec`.
-10. In the GitHub repository, open **Settings > Secrets and variables > Actions > Variables**.
-11. Add a repository variable named `CONTACT_FORM_ENDPOINT` with the Web App URL.
+10. In the GitHub repository, open **Settings > Secrets and variables > Actions**.
+11. Add a repository variable (or secret) named `CONTACT_FORM_ENDPOINT` with the Web App URL. The deployment workflow reads either.
 12. Push any commit or manually run the deployment workflow.
 
 The first successful submission creates a `Resume requests` sheet tab with the request data. Reply to the visitor using the `Reply email` value and attach the resume manually.
