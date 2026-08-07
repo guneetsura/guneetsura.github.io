@@ -2,10 +2,15 @@
 
 The portfolio uses a Google Apps Script Web App as a free, private form backend. It stores requests in a private Google Sheet and optionally sends a notification email. Your email address is never included in the website source or form endpoint.
 
+## Requirements
+
+- The Apps Script project must be **bound to your Google Sheet**. Open the Sheet and use **Extensions > Apps Script** so `SpreadsheetApp.getActiveSpreadsheet()` resolves. A standalone script (created from script.google.com) has no spreadsheet and will fail to save.
+- To receive the notification email, set the script property `NOTIFICATION_EMAIL`. If it is missing, the script falls back to the owner of the script (the account that deployed it) via `Session.getEffectiveUser().getEmail()`.
+
 ## Deploy
 
 1. Create a new Google Sheet for portfolio requests.
-2. Open **Extensions > Apps Script**.
+2. Open **Extensions > Apps Script** (this binds the script to the Sheet).
 3. Replace the default script with `google-apps-script/Code.gs`.
 4. In Apps Script, open **Project Settings > Script Properties** and add:
    - Property: `NOTIFICATION_EMAIL`
@@ -19,7 +24,13 @@ The portfolio uses a Google Apps Script Web App as a free, private form backend.
 11. Add a repository variable (or secret) named `CONTACT_FORM_ENDPOINT` with the Web App URL. The deployment workflow reads either.
 12. Push any commit or manually run the deployment workflow.
 
-The first successful submission creates a `Resume requests` sheet tab with the request data. Reply to the visitor using the `Reply email` value and attach the resume manually.
+> **Important:** After editing `Code.gs`, you must create a **new version** and redeploy (Deploy > Manage deployments > Edit > New version), otherwise the old code keeps running.
+
+## Verify
+
+- Open the `/exec` URL in a browser: it returns `{"ok":true,"service":"portfolio-contact","sheetReady":true,...}`. `sheetReady: false` means the script is not bound to a Sheet (or the `SPREADSHEET_ID` property is wrong).
+- Submit the form once, then open your Sheet: the first successful submission creates a `Resume requests` sheet tab with the request data.
+- The notification email goes to `NOTIFICATION_EMAIL` (or the deployer's account). Reply to the visitor using the `Reply email` value and attach the resume manually.
 
 ## Privacy
 
