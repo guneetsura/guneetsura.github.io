@@ -1,8 +1,8 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useState, ChangeEvent, FormEvent } from 'react';
-import { motion } from 'framer-motion';
-import { ExternalLink, Send } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ExternalLink, Send, Zap } from 'lucide-react';
 import { getProfile } from '@/lib/data-provider';
 import { portfolioData } from '@/lib/data';
 import { Profile, ContactFormData, SubmitStatus } from '@/lib/types';
@@ -96,6 +96,58 @@ const Contact: React.FC = () => {
           {status === 'error' && <p role="alert" className="text-sm text-red-300">The form is not configured or could not send. Please use LinkedIn instead.</p>}
         </motion.form>
       </div>
+
+      <AnimatePresence>
+        {status === 'success' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.9, y: 20, opacity: 0 }}
+              transition={{ type: 'spring', duration: 0.5 }}
+              className="relative max-w-sm w-full card p-8 text-center border-[var(--accent)] shadow-2xl shadow-[var(--accent-soft)] overflow-hidden"
+            >
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [0, 0.8, 0.2, 1, 0] }}
+                transition={{ duration: 0.8, times: [0, 0.2, 0.4, 0.6, 1] }}
+                className="absolute inset-0 bg-[var(--accent)]/10 pointer-events-none"
+              />
+
+              <div className="relative z-10 flex flex-col items-center">
+                <motion.div
+                  initial={{ scale: 0, rotate: -30 }}
+                  animate={{ scale: [0, 1.3, 1], rotate: [0, -10, 0] }}
+                  transition={{ delay: 0.1, duration: 0.6, ease: 'easeOut' }}
+                  className="w-16 h-16 rounded-full bg-[var(--accent-soft)] flex items-center justify-center text-[var(--accent)] mb-6 border border-[var(--accent)]/30 relative"
+                >
+                  <div className="absolute inset-0 rounded-full bg-[var(--accent)] opacity-20 blur-md animate-pulse" />
+                  <Zap size={32} className="fill-[var(--accent)]" />
+                </motion.div>
+
+                <h3 className="font-display text-2xl text-[var(--text)] mb-2 tracking-tight">Transmission Sent</h3>
+                <p className="font-signal text-xs text-[var(--accent)] mb-4 tracking-wider">SECURE CONNECTION ESTABLISHED</p>
+                <p className="text-sm text-[var(--text-muted)] leading-relaxed mb-6">
+                  Thank you for reaching out. Your message has bypassed the noise and landed in my inbox. I will follow up shortly.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={() => setStatus('idle')}
+                  className="btn-primary w-full py-2.5 font-medium text-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  Acknowledge
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="divider mt-24 mb-8" />
       <p className="text-xs text-[var(--text-faint)] text-center">Guneet Sura. Built with ❤️ using Next.js, Tailwind, and Framer Motion.</p>
