@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Guneet Sura — Portfolio
+
+Live site: **[https://guneetsura.github.io](https://guneetsura.github.io)**
+
+Portfolio of [Guneet Sura](https://github.com/guneetsura), a frontend-focused software engineer building production web applications with React, Next.js, and TypeScript.
+
+## Stack
+
+- **Next.js 16** (App Router, static export for GitHub Pages)
+- **TypeScript**
+- **Tailwind CSS v4**
+- **Framer Motion**
+- **lucide-react**
+- **GitHub Pages** via GitHub Actions
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm ci
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view it locally.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Build and lint:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run lint
+npm run build
+```
 
-## Learn More
+## Deploy
 
-To learn more about Next.js, take a look at the following resources:
+`main` auto-deploys to GitHub Pages via `.github/workflows/deploy.yml`. The workflow builds a static export to `out/`, uploads it, and verifies the live site responds after deploy.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Contact Form Backend
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The form posts to a private Google Apps Script Web App. See [docs/contact-form-setup.md](docs/contact-form-setup.md) for how storage, notifications, and the GitHub Actions endpoint variable work.
