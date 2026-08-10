@@ -47,8 +47,9 @@ const About: React.FC = () => {
           </p>
           <p>
             Outside of work, I&apos;m usually deep in a car spec sheet, catching up on Star Wars,
-            or rewatching Flash episodes for the tenth time — turns out an obsession with speed
-            translates surprisingly well into caring about page load times.
+            rewatching Flash episodes for the tenth time, or writing — turns out an obsession with
+            speed translates surprisingly well into caring about page load times, and writing
+            regularly keeps that same instinct for clarity sharp elsewhere.
           </p>
         </motion.div>
 

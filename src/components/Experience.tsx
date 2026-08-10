@@ -35,12 +35,14 @@ const ExperienceItemCard = ({
   const markerBg = useTransform(
     scrollYProgress, 
     activationRange, 
-    [exp.current ? 'var(--accent)' : 'var(--bg)', '#FFFFFF', 'var(--accent)']
+    [exp.current ? 'var(--accent)' : 'var(--bg)', '#FFFFFF', 'var(--accent)'],
+    { clamp: true }
   );
   const markerBorder = useTransform(
     scrollYProgress, 
     activationRange, 
-    [exp.current ? 'var(--accent)' : 'var(--border-strong)', 'var(--accent)', 'var(--accent)']
+    [exp.current ? 'var(--accent)' : 'var(--border-strong)', 'var(--accent)', 'var(--accent)'],
+    { clamp: true }
   );
   const markerShadow = useTransform(
     scrollYProgress, 
@@ -49,36 +51,42 @@ const ExperienceItemCard = ({
       '0 0 0px transparent', 
       reducedMotion ? '0 0 0px transparent' : '0 0 14px 4px rgba(226, 169, 69, 0.7)', 
       reducedMotion ? '0 0 0px transparent' : '0 0 6px 1px rgba(226, 169, 69, 0.3)'
-    ]
+    ],
+    { clamp: true }
   );
   const markerScale = useTransform(
     scrollYProgress,
     activationRange,
-    [1, 1.25, 1]
+    [1, 1.25, 1],
+    { clamp: true }
   );
 
   // Card border & background styling animation
   const cardBorder = useTransform(
     scrollYProgress, 
     activationRange, 
-    ['var(--border)', 'rgba(226, 169, 69, 0.5)', 'rgba(226, 169, 69, 0.2)']
+    ['var(--border)', 'rgba(226, 169, 69, 0.5)', 'rgba(226, 169, 69, 0.2)'],
+    { clamp: true }
   );
   const cardBg = useTransform(
     scrollYProgress, 
     activationRange, 
-    ['transparent', 'rgba(226, 169, 69, 0.04)', 'transparent']
+    ['transparent', 'rgba(226, 169, 69, 0.04)', 'transparent'],
+    { clamp: true }
   );
   
   // Shimmer effect across the top border
   const shimmerLeft = useTransform(
     scrollYProgress, 
     [threshold - 0.015, threshold + 0.035], 
-    ['-20%', '120%']
+    ['-20%', '120%'],
+    { clamp: true }
   );
   const shimmerOpacity = useTransform(
     scrollYProgress, 
     [threshold - 0.015, threshold + 0.01, threshold + 0.035], 
-    [0, 1, 0]
+    [0, 1, 0],
+    { clamp: true }
   );
 
   return (
@@ -137,7 +145,7 @@ const ExperienceItemCard = ({
             </div>
           </div>
         )}
-      </motion.div>
+        </motion.div>
     </motion.article>
   );
 };
@@ -158,10 +166,16 @@ const Experience: React.FC = () => {
     target: containerRef,
     offset: ["start center", "end center"]
   });
+
+  // Clamp raw scroll progress strictly to [0, 1] so negative values when above section don't corrupt spring target
+  const clampedScrollProgress = useTransform(scrollYProgress, [0, 1], [0, 1], { clamp: true });
   
   const reducedMotion = useReducedMotion();
-  const springProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
-  const scaleY = reducedMotion ? scrollYProgress : springProgress;
+  const springProgress = useSpring(clampedScrollProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
+
+  // Clamp output scaleY strictly to [0, 1] so spring physics overshoots (< 0 or > 1) never pass invalid negative pathLength to SVG
+  const rawScale = reducedMotion ? clampedScrollProgress : springProgress;
+  const scaleY = useTransform(rawScale, [0, 1], [0, 1], { clamp: true });
 
   const setCardRef = useCallback((el: HTMLElement | null, idx: number) => {
     cardElementsRef.current[idx] = el;
@@ -249,8 +263,8 @@ const Experience: React.FC = () => {
 
   const firstY = markerPositions[0] ?? 8;
   const lastY = markerPositions[markerPositions.length - 1] ?? 8;
-  const tipY = useTransform(scaleY, [0, 1], [firstY, lastY]);
-  const tipOpacity = useTransform(scaleY, [0, 0.01, 0.99, 1], [0, 1, 1, 1]);
+  const tipY = useTransform(scaleY, [0, 1], [firstY, lastY], { clamp: true });
+  const tipOpacity = useTransform(scaleY, [0, 0.01, 0.99, 1], [0, 1, 1, 1], { clamp: true });
 
   return (
     <section id="experience" className="section">
@@ -304,7 +318,7 @@ const Experience: React.FC = () => {
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              style={{ pathLength: scaleY }}
+              style={{ pathLength: reducedMotion ? 1 : scaleY }}
             />
           )}
 

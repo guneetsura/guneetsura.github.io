@@ -8,79 +8,56 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
-## Developer Context
-Guneet Sura is a frontend-focused Software Engineer with full-stack range and production experience across React, Next.js, TypeScript, Tailwind CSS, Framer Motion, REST APIs, PostgreSQL / NeonDB, Drizzle ORM, Clerk, Supabase, Python, Vercel, Oracle Cloud Infrastructure (OCI), and Figma for design handoff.
+# Project-specific guidance for AI coding agents
 
-Firebase is used in this repository's data-provider abstraction (`src/lib/data-provider.ts`) as an optional CMS/data backend architecture — describe it as repository architecture, **not as a resume-listed production skill**.
+## Who this is for
+This is Guneet Sura's personal portfolio — a frontend-focused Software Engineer with full-stack range. Production experience includes React, Next.js, TypeScript, Tailwind CSS, Framer Motion, REST APIs, PostgreSQL/NeonDB, Drizzle ORM, Clerk, Supabase, Python, Vercel, and Oracle Cloud Infrastructure, plus Figma for design handoff. He has shipped production applications — including a full HRMS — at Ad2connect, not just hackathon projects (KAVACH 2023 national win included), so prefer production-quality implementations over demo-quality shortcuts: proper error handling, loading states, accessibility, and responsive behavior, not just "it renders."
 
-Guneet has shipped real production applications, including an HRMS at Ad2connect, client websites, and SaaS platforms. Do not characterize his experience as being limited to hackathons.
+Firebase is present in this repo (`src/lib/firebase.ts`, `src/lib/data-provider.ts`) as an optional CMS-swap backend for content, not a resume-listed production skill — treat it as part of this repo's architecture, not as evidence of broader Firebase experience.
 
-## Engineering Preferences
-Coding agents working on this repository must prioritize:
-- **Production Quality**: Avoid demo-quality shortcuts, fragile hacks, or superficial patches.
-- **Frontend Visual Quality**: High design standards with dark/amber technical aesthetics, clean layout, typography, and cohesive spacing.
-- **Responsive Behavior**: Mobile-first design, fluid flex/grid layouts, no desktop-only assumptions.
-- **Accessibility**: Semantic HTML, proper keyboard focus indicators (`focus-visible`), appropriate ARIA attributes.
-- **Performance**: High frame rate scroll interactions, lightweight SVG/CSS transitions, proper React hook dependency arrays, and no layout thrashing.
-- **Maintainability**: Clean TypeScript interfaces and modular component structure.
-- **Interaction Design**: Purposeful, restrained motion that enhances usability without distracting.
+## Stack (verify against package.json — do not assume versions)
+Next.js 16 (App Router, static export for GitHub Pages), React 19, TypeScript, Tailwind CSS v4, Framer Motion, lucide-react, Firebase (optional). Deployed via GitHub Actions to GitHub Pages (`main` auto-deploys, see `.github/workflows/deploy.yml`).
 
-## Repository Guidance
-- **Source Directory**: `src/`
-- **Key Components**:
-  - `src/components/Navbar.tsx`: Sticky navigation header with scroll progress indicator & mobile menu.
-  - `src/components/Hero.tsx`: Interactive hero section with HUD elements and social links.
-  - `src/components/About.tsx`: Professional bio and background summary.
-  - `src/components/Experience.tsx`: Interactive work experience timeline featuring scroll-driven electrical current lightning effect, expandable entries, and responsive DOM geometry tracking.
-  - `src/components/Projects.tsx`: Featured portfolio projects with tech stack chips and links.
-  - `src/components/Writing.tsx`: Dedicated articles section rendering post excerpts with Substack CTA.
-  - `src/components/Skills.tsx`: Grouped technical skills and platform proficiencies.
-  - `src/components/Contact.tsx`: Contact form with validation feedback and modal dialogs.
-  - `src/components/BackToTop.tsx`: Floating scroll-to-top button.
-- **Data Architecture & Fallback Pattern**:
-  - Types defined in `src/lib/types.ts`.
-  - Data provider abstraction in `src/lib/data-provider.ts` fetches from Firestore when `NEXT_PUBLIC_USE_FIREBASE=true` and valid Firebase config (`src/lib/firebase.ts`) is present.
-  - Falls back seamlessly to static data in `src/lib/data.ts` (`portfolioData`) if Firebase is disabled or fails.
-- **Styles & Design Tokens**:
-  - Global stylesheet: `src/app/globals.css`.
-  - CSS variables define design tokens: `--bg` (`#0B0C10`), `--surface` (`#121319`), `--surface-2` (`#191B22`), `--border` (`rgba(255, 255, 255, 0.08)`), `--border-strong` (`rgba(255, 255, 255, 0.14)`), `--text` (`#EDEDF0`), `--text-muted` (`#9297A3`), `--text-faint` (`#5C6270`), `--accent` (`#E2A945`), `--accent-soft` (`rgba(226, 169, 69, 0.12)`).
-- **Relevant Package Scripts**:
-  - `npm run dev`: Start local Next.js development server.
-  - `npm run build`: Production build and TypeScript type check.
-  - `npm run start`: Run production server.
-  - `npm run lint`: ESLint code style and quality check.
+## Priorities (in order)
+1. Visual quality and interaction polish — this is a portfolio; how it looks and feels is the product.
+2. Responsive behavior across breakpoints — never hardcode desktop-only pixel values.
+3. Accessibility — semantic markup, keyboard navigation, aria labels on icon-only controls, respect `prefers-reduced-motion`.
+4. Performance — prefer transform/opacity animation over layout-triggering properties; avoid unnecessary re-renders and dependencies.
+5. Maintainability — follow existing patterns rather than introducing new ones for a single feature.
 
-## Animation Guidance
-- Animation must remain restrained, deliberate, and aligned with the site's sleek technical aesthetic.
-- Prefer Framer Motion where appropriate (`useScroll`, `useTransform`, `useSpring`, `motion.div`).
-- Avoid excessive stagger effects, cartoonish animations, or heavy neon/glow blurs.
-- Avoid unnecessary external animation libraries.
-- For scroll-driven timeline effects, calculate and track actual rendered DOM geometry using `ResizeObserver`.
-- Always respect `prefers-reduced-motion` settings.
+## Architecture
+- `src/app/` — Next.js App Router pages, root layout, global styles (`globals.css`).
+- `src/components/` — one component per site section (Navbar, Hero, About, Experience, Projects, Skills, Contact, etc.).
+- `src/lib/` — `types.ts` (shared types), `data.ts` (static resume-derived content), `data-provider.ts` (data-source abstraction), `firebase.ts` (guarded Firebase init).
+- `google-apps-script/` — backend for the Contact form, which posts to a private Google Apps Script Web App (see `docs/contact-form-setup.md`). Do not replace this with a simulated/fake submit handler — it is a working integration.
+- `docs/` — supporting documentation.
 
-## Responsive & Accessibility Guidelines
-- Implement mobile-first, testing layout across mobile, tablet, and desktop breakpoints.
-- Enforce `@media (prefers-reduced-motion: reduce)` in CSS and `useReducedMotion()` in Framer Motion components.
-- Ensure baseline `@media (prefers-reduced-motion: reduce)` rule exists in `src/app/globals.css`.
-- Use semantic HTML tags (`<main>`, `<section>`, `<article>`, `<nav>`, `<header>`).
-- Ensure keyboard navigability and ARIA accessibility (`aria-expanded`, `aria-label`, `aria-current`).
+## Data-provider pattern
+All page content (profile, experience, projects, skills, education, awards) is read through functions in `src/lib/data-provider.ts` (e.g. `getProfile()`, `getExperiences()`), not hardcoded directly in components. These functions read from static data in `data.ts` by default, and switch to Firestore when `NEXT_PUBLIC_USE_FIREBASE=true` and valid Firebase config are present — falling back silently to static data on any failure. New content types should follow this same pattern rather than being hardcoded.
 
-## Scope & Security Rules
-- Make the smallest coherent changes necessary for the task.
-- Avoid unrelated refactors or changing file structures unnecessarily.
-- Never expose secrets, API keys, or environment variables in repository code.
-- Never alter portfolio facts, role details, or work experience dates without explicit user instruction.
+## Design tokens (`src/app/globals.css`)
+Dark background, single accent color used sparingly: `--accent: #E2A945`. Typography is Ubuntu. Reuse existing CSS variables (`--accent`, `--accent-soft`, `--border`, `--border-strong`, `--surface`, etc.) rather than introducing new colors for a single feature.
 
-## Verification Requirements
-Before marking any task complete, agents MUST run:
-```bash
-npm run lint
-npm run build
-```
-Ensure zero TypeScript, ESLint, or Next.js build errors exist. For meaningful visual or interactive UI changes, perform browser rendering verification when tooling is available.
+## Animation and scroll-driven interactions
+Motion should be restrained and purposeful: fade-up on scroll into view, no exploding stagger cascades, no neon glow/box-shadow spam. Any scroll-driven effect (e.g. the Experience timeline) must genuinely track scroll position (Framer Motion `useScroll`/`useTransform` or equivalent) — never a one-shot `whileInView` or `setTimeout` sequence dressed up as "scroll-driven." Verify existing scroll-driven implementations behave correctly in both scroll directions before extending them.
 
-## Git Workflow
-- Create focused, coherent git commits for feature work.
-- Never force-push or rewrite commit history.
-- Open a Pull Request (PR) for requested feature work.
+## Responsive requirements
+No hardcoded desktop-only pixel coordinates. Derive layout-dependent values (e.g. SVG/path geometry) from actual DOM measurements or `ResizeObserver` where needed. Verify behavior at mobile, tablet, and desktop breakpoints, and after content height changes (e.g. expanding text).
 
+## `prefers-reduced-motion`
+Respect the `prefers-reduced-motion: reduce` media query in `globals.css`. Users who prefer reduced motion should see the site's content and layout fully intact, with continuous/decorative animation disabled or replaced with a static equivalent.
+
+## TypeScript and React standards
+Strict typing — no implicit `any`. Function components with explicit prop types. Prefer composition over duplication. Keep components scoped to one section/responsibility, matching the existing one-component-per-section pattern.
+
+## Scope discipline
+Do not perform unrelated refactors, rename working files, or replace working architecture (e.g. the data-provider pattern, the Google Apps Script contact backend) as a side effect of an unrelated task. Touch only what the task requires.
+
+## Security
+Never commit or expose credentials, API keys, or environment secrets. Firebase config and the Google Apps Script endpoint are read from environment variables — do not hardcode them.
+
+## Verification before considering a task done
+Run `npm run lint` and `npm run build`. Both must pass with no TypeScript errors. For any change with visual or interactive impact, describe (or where possible, capture) what changed on screen — don't rely on "it compiles" as sufficient verification for UI work.
+
+## Git / change management
+Keep commits scoped to the stated task. Open a PR rather than pushing directly to `main` where possible, and describe what was verified (lint/build/manual check) in the PR description.
