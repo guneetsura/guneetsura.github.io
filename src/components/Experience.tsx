@@ -35,7 +35,7 @@ const ExperienceItemCard = ({
   const markerBg = useTransform(
     scrollYProgress, 
     activationRange, 
-    [exp.current ? 'var(--accent)' : 'var(--bg)', '#FFFFFF', 'var(--accent)'],
+    [exp.current ? 'var(--accent)' : 'var(--bg)', 'var(--text)', 'var(--accent)'],
     { clamp: true }
   );
   const markerBorder = useTransform(
@@ -193,8 +193,8 @@ const Experience: React.FC = () => {
       const elements = cardEls.filter(Boolean) as HTMLElement[];
       if (elements.length === 0) return;
 
-      // Marker center is top-1.5 + half circle (7.5) = 9px relative to card element top
-      const positions = elements.map((el) => el.offsetTop + 9);
+      // Marker center is top-1.5 (0.375rem = 6px) + half circle (7.5px) = 13.5px relative to card element top
+      const positions = elements.map((el) => el.offsetTop + 13.5);
       setMarkerPositions(positions);
 
       const y0 = positions[0];
@@ -261,8 +261,8 @@ const Experience: React.FC = () => {
     });
   };
 
-  const firstY = markerPositions[0] ?? 8;
-  const lastY = markerPositions[markerPositions.length - 1] ?? 8;
+  const firstY = markerPositions[0] ?? 13.5;
+  const lastY = markerPositions[markerPositions.length - 1] ?? 13.5;
   const tipY = useTransform(scaleY, [0, 1], [firstY, lastY], { clamp: true });
   const tipOpacity = useTransform(scaleY, [0, 0.01, 0.99, 1], [0, 1, 1, 1], { clamp: true });
 
@@ -314,7 +314,7 @@ const Experience: React.FC = () => {
             <motion.path
               d={jaggedPath}
               fill="none"
-              stroke={reducedMotion ? "var(--accent)" : "#FFF3C4"}
+              stroke={reducedMotion ? "var(--accent)" : "var(--text)"}
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -328,7 +328,7 @@ const Experience: React.FC = () => {
               cx={7.5}
               cy={tipY}
               r={3}
-              fill="#FFFFFF"
+              fill="var(--text)"
               style={{
                 filter: 'drop-shadow(0 0 6px var(--accent))',
                 opacity: tipOpacity
