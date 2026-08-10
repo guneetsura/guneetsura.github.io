@@ -1,4 +1,4 @@
-﻿export interface Profile {
+export interface Profile {
   name: string;
   title: string;
   tagline: string;
@@ -18,6 +18,13 @@ export interface ExperienceItem {
   current?: boolean;
   description: string[];
   technologies: string[];
+}
+
+export interface WritingItem {
+  id: string;
+  title: string;
+  excerpt: string;
+  url: string;
 }
 
 export interface ProjectItem {
@@ -59,6 +66,7 @@ export interface PortfolioData {
   skills: SkillGroup[];
   education: Education[];
   awards: Award[];
+  writing: WritingItem[];
 }
 
 export type SubmitStatus = 'idle' | 'submitting' | 'success' | 'error';

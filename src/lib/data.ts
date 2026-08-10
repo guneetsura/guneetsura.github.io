@@ -1,4 +1,4 @@
-﻿import { PortfolioData } from './types';
+import { PortfolioData } from './types';
 
 export const portfolioData: PortfolioData = {
   profile: {
@@ -147,6 +147,27 @@ export const portfolioData: PortfolioData = {
       issuer: 'Government of India',
       date: 'Aug 2023',
       detail: 'PS ID KVH006 — Dark Web Crawler',
+    },
+  ],
+
+  writing: [
+    {
+      id: 'building-production-hrms',
+      title: 'Building a Production HRMS with Next.js and Neon PostgreSQL',
+      excerpt: 'Lessons learned scaling a biometric attendance sync service on Oracle Cloud Infrastructure, and why Drizzle ORM was the right choice for our data model.',
+      url: '#',
+    },
+    {
+      id: 'framer-motion-scroll-performance',
+      title: 'High-Performance Scroll Animations with Framer Motion',
+      excerpt: 'How to build engaging, scroll-driven UI elements without sacrificing 60fps or triggering layout thrashing on mobile devices.',
+      url: '#',
+    },
+    {
+      id: 'headless-cms-nextjs',
+      title: 'Integrating WordPress Headless CMS with Next.js App Router',
+      excerpt: 'A practical guide to fetching, caching, and revalidating WordPress content while preserving exceptional frontend performance and Lighthouse scores.',
+      url: '#',
     },
   ],
 };

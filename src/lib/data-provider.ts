@@ -15,6 +15,7 @@ import {
   SkillGroup,
   Education,
   Award,
+  WritingItem,
 } from './types';
 
 /**
@@ -30,6 +31,7 @@ import {
  *   skills/{id}        -> SkillGroup
  *   education/{id}     -> Education
  *   awards/{id}        -> Award
+ *   writing/{id}       -> WritingItem     (order by `order` asc)
  */
 const USE_FIREBASE =
   process.env.NEXT_PUBLIC_USE_FIREBASE === 'true' && hasFirebaseConfig();
@@ -116,4 +118,19 @@ export async function getAwards(): Promise<Award[]> {
     }
   }
   return portfolioData.awards;
+}
+
+export async function getWriting(): Promise<WritingItem[]> {
+  if (USE_FIREBASE && db) {
+    try {
+      const q = query(collection(db, 'writing'), orderBy('order', 'asc'));
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        return snap.docs.map((d) => ({ id: d.id, ...d.data() } as WritingItem));
+      }
+    } catch (err) {
+      console.error('Falling back to static writing:', err);
+    }
+  }
+  return portfolioData.writing;
 }
