@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { Minus, Plus } from 'lucide-react';
 import { motion, useScroll, useTransform, useSpring, useReducedMotion, MotionValue } from 'framer-motion';
 import { getExperiences } from '@/lib/data-provider';
@@ -14,54 +14,76 @@ const ExperienceItemCard = ({
   index, 
   isExpanded, 
   toggleExperience, 
-  containerRef, 
+  threshold,
   scrollYProgress,
-  reducedMotion
+  reducedMotion,
+  setCardRef
 }: { 
   exp: ExperienceItem; 
   index: number; 
   isExpanded: boolean; 
   toggleExperience: (id: string) => void;
-  containerRef: React.RefObject<HTMLDivElement | null>;
+  threshold: number;
   scrollYProgress: MotionValue<number>;
   reducedMotion: boolean | null;
+  setCardRef: (el: HTMLElement | null, idx: number) => void;
 }) => {
-  const cardRef = useRef<HTMLElement>(null);
-  const [threshold, setThreshold] = useState(1);
-
-  useEffect(() => {
-    const measure = () => {
-      if (!containerRef.current || !cardRef.current) return;
-      const containerHeight = containerRef.current.offsetHeight;
-      const topOffset = cardRef.current.offsetTop;
-      setThreshold((topOffset + 6) / containerHeight);
-    };
-    measure();
-    const observer = new ResizeObserver(measure);
-    if (containerRef.current) observer.observe(containerRef.current);
-    if (cardRef.current) observer.observe(cardRef.current);
-    return () => observer.disconnect();
-  }, [isExpanded, containerRef]);
-
-  // Map scroll progress around the threshold
-  const activationRange = [threshold - 0.02, threshold, threshold + 0.02];
+  // Map scroll progress around the calculated threshold for this marker
+  const activationRange = [threshold - 0.03, threshold, threshold + 0.03];
   
-  // Marker styling
-  const markerBg = useTransform(scrollYProgress, activationRange, [exp.current ? 'var(--accent)' : 'var(--bg)', 'var(--accent)', 'var(--accent)']);
-  const markerBorder = useTransform(scrollYProgress, activationRange, [exp.current ? 'var(--accent)' : 'var(--border-strong)', 'var(--accent)', 'var(--accent)']);
-  const markerShadow = useTransform(scrollYProgress, activationRange, ['0 0 0px rgba(226, 169, 69, 0)', reducedMotion ? '0 0 0px rgba(226, 169, 69, 0)' : '0 0 10px 2px rgba(226, 169, 69, 0.4)', reducedMotion ? '0 0 0px rgba(226, 169, 69, 0)' : '0 0 10px 2px rgba(226, 169, 69, 0.4)']);
+  // Marker styling animation
+  const markerBg = useTransform(
+    scrollYProgress, 
+    activationRange, 
+    [exp.current ? 'var(--accent)' : 'var(--bg)', '#FFFFFF', 'var(--accent)']
+  );
+  const markerBorder = useTransform(
+    scrollYProgress, 
+    activationRange, 
+    [exp.current ? 'var(--accent)' : 'var(--border-strong)', 'var(--accent)', 'var(--accent)']
+  );
+  const markerShadow = useTransform(
+    scrollYProgress, 
+    activationRange, 
+    [
+      '0 0 0px transparent', 
+      reducedMotion ? '0 0 0px transparent' : '0 0 14px 4px rgba(226, 169, 69, 0.7)', 
+      reducedMotion ? '0 0 0px transparent' : '0 0 6px 1px rgba(226, 169, 69, 0.3)'
+    ]
+  );
+  const markerScale = useTransform(
+    scrollYProgress,
+    activationRange,
+    [1, 1.25, 1]
+  );
 
-  // Card border styling
-  const cardBorder = useTransform(scrollYProgress, activationRange, ['transparent', 'rgba(226, 169, 69, 0.3)', 'rgba(226, 169, 69, 0.15)']);
-  const cardBg = useTransform(scrollYProgress, activationRange, ['transparent', 'rgba(226, 169, 69, 0.03)', 'transparent']);
+  // Card border & background styling animation
+  const cardBorder = useTransform(
+    scrollYProgress, 
+    activationRange, 
+    ['var(--border)', 'rgba(226, 169, 69, 0.5)', 'rgba(226, 169, 69, 0.2)']
+  );
+  const cardBg = useTransform(
+    scrollYProgress, 
+    activationRange, 
+    ['transparent', 'rgba(226, 169, 69, 0.04)', 'transparent']
+  );
   
-  // Shimmer effect
-  const shimmerLeft = useTransform(scrollYProgress, [threshold, threshold + 0.05], ['-20%', '120%']);
-  const shimmerOpacity = useTransform(scrollYProgress, [threshold, threshold + 0.02, threshold + 0.05], [0, 1, 0]);
+  // Shimmer effect across the top border
+  const shimmerLeft = useTransform(
+    scrollYProgress, 
+    [threshold - 0.015, threshold + 0.035], 
+    ['-20%', '120%']
+  );
+  const shimmerOpacity = useTransform(
+    scrollYProgress, 
+    [threshold - 0.015, threshold + 0.01, threshold + 0.035], 
+    [0, 1, 0]
+  );
 
   return (
     <motion.article 
-      ref={cardRef}
+      ref={(el) => setCardRef(el, index)}
       initial="hidden" 
       whileInView="visible" 
       viewport={{ once: true, amount: 0.3 }} 
@@ -70,8 +92,13 @@ const ExperienceItemCard = ({
       className="relative pl-10"
     >
       <motion.span 
-        className="absolute left-0 top-1.5 w-[15px] h-[15px] rounded-full border-2 z-10"
-        style={{ background: markerBg, borderColor: markerBorder, boxShadow: markerShadow }}
+        className="absolute left-0 top-1.5 w-[15px] h-[15px] rounded-full border-2 z-20"
+        style={{ 
+          background: markerBg, 
+          borderColor: markerBorder, 
+          boxShadow: markerShadow,
+          scale: reducedMotion ? 1 : markerScale 
+        }}
       />
       <motion.div 
         className="relative rounded-xl p-4 -ml-4 overflow-hidden border transition-colors"
@@ -79,7 +106,7 @@ const ExperienceItemCard = ({
       >
         {!reducedMotion && (
           <motion.div 
-            className="absolute top-0 w-1/3 h-px bg-gradient-to-r from-transparent via-[var(--accent)] to-transparent"
+            className="absolute top-0 w-1/3 h-px bg-gradient-to-r from-transparent via-[var(--accent)] to-transparent z-10"
             style={{ left: shimmerLeft, opacity: shimmerOpacity }}
           />
         )}
@@ -120,6 +147,13 @@ const Experience: React.FC = () => {
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set(portfolioData.experiences.map((experience) => experience.id)));
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const cardElementsRef = useRef<(HTMLElement | null)[]>([]);
+
+  const [containerHeight, setContainerHeight] = useState<number>(0);
+  const [markerPositions, setMarkerPositions] = useState<number[]>([]);
+  const [jaggedPath, setJaggedPath] = useState<string>('');
+  const [thresholds, setThresholds] = useState<number[]>([]);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start center", "end center"]
@@ -128,6 +162,74 @@ const Experience: React.FC = () => {
   const reducedMotion = useReducedMotion();
   const springProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
   const scaleY = reducedMotion ? scrollYProgress : springProgress;
+
+  const setCardRef = useCallback((el: HTMLElement | null, idx: number) => {
+    cardElementsRef.current[idx] = el;
+  }, []);
+
+  useEffect(() => {
+    const containerEl = containerRef.current;
+    const cardEls = cardElementsRef.current;
+
+    const measure = () => {
+      if (!containerEl) return;
+      
+      setContainerHeight(containerEl.offsetHeight);
+
+      const elements = cardEls.filter(Boolean) as HTMLElement[];
+      if (elements.length === 0) return;
+
+      // Marker center is top-1.5 + half circle (7.5) = 9px relative to card element top
+      const positions = elements.map((el) => el.offsetTop + 9);
+      setMarkerPositions(positions);
+
+      const y0 = positions[0];
+      const yLast = positions[positions.length - 1];
+      const totalSpan = yLast - y0;
+
+      // Calculate relative thresholds for each marker
+      if (totalSpan > 0) {
+        setThresholds(positions.map((y) => (y - y0) / totalSpan));
+      } else {
+        setThresholds(positions.map(() => 0));
+      }
+
+      // Build jagged electrical SVG path
+      let pathStr = `M 7.5,${y0}`;
+      for (let i = 0; i < positions.length - 1; i++) {
+        const startY = positions[i];
+        const endY = positions[i + 1];
+        const deltaY = endY - startY;
+        const steps = Math.max(3, Math.floor(deltaY / 18));
+        const stepH = deltaY / steps;
+
+        for (let s = 1; s < steps; s++) {
+          const currentY = startY + s * stepH;
+          // Alternate subtle technical zigzag (±1.8px) tapering near endpoints
+          const isNearEdge = s === 1 || s === steps - 1;
+          const offset = isNearEdge ? (s % 2 === 1 ? 1 : -1) : (s % 2 === 1 ? 1.8 : -1.8);
+          pathStr += ` L ${7.5 + offset},${currentY.toFixed(1)}`;
+        }
+        pathStr += ` L 7.5,${endY}`;
+      }
+      setJaggedPath(pathStr);
+    };
+
+    measure();
+    
+    const observer = new ResizeObserver(() => {
+      measure();
+    });
+
+    if (containerEl) {
+      observer.observe(containerEl);
+    }
+    cardEls.forEach((el) => {
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, [experiences, expanded]);
 
   useEffect(() => {
     getExperiences().then((data) => {
@@ -145,40 +247,101 @@ const Experience: React.FC = () => {
     });
   };
 
-  return <section id="experience" className="section">
-    <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={fadeUp}>
-      <p className="eyebrow mb-3">Experience</p>
-      <h2 className="font-display text-3xl sm:text-4xl text-[var(--text)] mb-16">Where I&apos;ve worked</h2>
-    </motion.div>
-    <div className="relative" ref={containerRef}>
-      {/* Static background timeline */}
-      <div className="absolute left-[7px] top-2 bottom-2 w-px bg-[var(--border)]" />
-      
-      {/* Scroll-driven lightning core */}
-      <motion.div 
-        className="absolute left-[7px] top-2 bottom-2 w-px bg-[var(--accent)] origin-top z-0"
-        style={{ 
-          scaleY,
-          boxShadow: reducedMotion ? 'none' : '0 0 8px 1px rgba(226, 169, 69, 0.4), 0 0 4px 1px rgba(255, 255, 255, 0.4)'
-        }}
-      />
-      
-      <div className="space-y-6">
-        {experiences.map((exp, index) => (
-          <ExperienceItemCard 
-            key={exp.id} 
-            exp={exp} 
-            index={index} 
-            isExpanded={expanded.has(exp.id)} 
-            toggleExperience={toggleExperience} 
-            containerRef={containerRef}
-            scrollYProgress={scaleY}
-            reducedMotion={reducedMotion}
-          />
-        ))}
+  const firstY = markerPositions[0] ?? 8;
+  const lastY = markerPositions[markerPositions.length - 1] ?? 8;
+  const tipY = useTransform(scaleY, [0, 1], [firstY, lastY]);
+  const tipOpacity = useTransform(scaleY, [0, 0.01, 0.99, 1], [0, 1, 1, 1]);
+
+  return (
+    <section id="experience" className="section">
+      <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={fadeUp}>
+        <p className="eyebrow mb-3">Experience</p>
+        <h2 className="font-display text-3xl sm:text-4xl text-[var(--text)] mb-16">Where I&apos;ve worked</h2>
+      </motion.div>
+      <div className="relative" ref={containerRef}>
+        {/* Static background timeline */}
+        <div 
+          className="absolute left-[7px] w-px bg-[var(--border)]" 
+          style={{ top: `${firstY}px`, bottom: `${containerHeight > 0 ? containerHeight - lastY : 8}px` }}
+        />
+        
+        {/* SVG Electrical Current Layer */}
+        <svg 
+          className="absolute top-0 left-0 w-6 h-full pointer-events-none z-10 overflow-visible"
+          aria-hidden="true"
+        >
+          <defs>
+            <filter id="lightning-glow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="2.5" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+
+          {/* Outer glow path */}
+          {!reducedMotion && jaggedPath && (
+            <motion.path
+              d={jaggedPath}
+              fill="none"
+              stroke="var(--accent)"
+              strokeWidth="3.5"
+              strokeOpacity="0.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ pathLength: scaleY }}
+              filter="url(#lightning-glow)"
+            />
+          )}
+
+          {/* Core bright lightning path */}
+          {jaggedPath && (
+            <motion.path
+              d={jaggedPath}
+              fill="none"
+              stroke={reducedMotion ? "var(--accent)" : "#FFF3C4"}
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ pathLength: scaleY }}
+            />
+          )}
+
+          {/* Leading ignition spark point */}
+          {!reducedMotion && markerPositions.length > 0 && (
+            <motion.circle
+              cx={7.5}
+              cy={tipY}
+              r={3}
+              fill="#FFFFFF"
+              style={{
+                filter: 'drop-shadow(0 0 6px var(--accent))',
+                opacity: tipOpacity
+              }}
+            />
+          )}
+        </svg>
+        
+        <div className="space-y-6">
+          {experiences.map((exp, index) => (
+            <ExperienceItemCard 
+              key={exp.id} 
+              exp={exp} 
+              index={index} 
+              isExpanded={expanded.has(exp.id)} 
+              toggleExperience={toggleExperience} 
+              threshold={thresholds[index] ?? (index / Math.max(1, experiences.length - 1))}
+              scrollYProgress={scaleY}
+              reducedMotion={reducedMotion}
+              setCardRef={setCardRef}
+            />
+          ))}
+        </div>
       </div>
-    </div>
-  </section>;
+    </section>
+  );
 };
 
 export default Experience;
+
