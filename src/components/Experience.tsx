@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { Minus, Plus } from 'lucide-react';
-import { motion, useScroll, useTransform, useSpring, useReducedMotion, MotionValue } from 'framer-motion';
+import { motion, useScroll, useTransform, useSpring, useReducedMotion, MotionValue, transform } from 'framer-motion';
 import { getExperiences } from '@/lib/data-provider';
 import { portfolioData } from '@/lib/data';
 import { ExperienceItem } from '@/lib/types';
@@ -28,65 +28,38 @@ const ExperienceItemCard = ({
   reducedMotion: boolean | null;
   setCardRef: (el: HTMLElement | null, idx: number) => void;
 }) => {
-  // Map scroll progress around the calculated threshold for this marker
-  const activationRange = [threshold - 0.03, threshold, threshold + 0.03];
-  
-  // Marker styling animation
-  const markerBg = useTransform(
-    scrollYProgress, 
-    activationRange, 
-    [exp.current ? 'var(--accent)' : 'var(--bg)', 'var(--text)', 'var(--accent)'],
-    { clamp: true }
+  // Marker styling animation - uses inline transform so that it adapts dynamically to changing threshold
+  const markerBg = useTransform(scrollYProgress, (v) => 
+    transform(v, [threshold - 0.03, threshold, threshold + 0.03], [exp.current ? 'var(--accent)' : 'var(--bg)', 'var(--text)', 'var(--accent)'], { clamp: true })
   );
-  const markerBorder = useTransform(
-    scrollYProgress, 
-    activationRange, 
-    [exp.current ? 'var(--accent)' : 'var(--border-strong)', 'var(--accent)', 'var(--accent)'],
-    { clamp: true }
+  const markerBorder = useTransform(scrollYProgress, (v) => 
+    transform(v, [threshold - 0.03, threshold, threshold + 0.03], [exp.current ? 'var(--accent)' : 'var(--border-strong)', 'var(--accent)', 'var(--accent)'], { clamp: true })
   );
-  const markerShadow = useTransform(
-    scrollYProgress, 
-    activationRange, 
-    [
+  const markerShadow = useTransform(scrollYProgress, (v) => 
+    transform(v, [threshold - 0.03, threshold, threshold + 0.03], [
       '0 0 0px transparent', 
       reducedMotion ? '0 0 0px transparent' : '0 0 14px 4px rgba(226, 169, 69, 0.7)', 
       reducedMotion ? '0 0 0px transparent' : '0 0 6px 1px rgba(226, 169, 69, 0.3)'
-    ],
-    { clamp: true }
+    ], { clamp: true })
   );
-  const markerScale = useTransform(
-    scrollYProgress,
-    activationRange,
-    [1, 1.25, 1],
-    { clamp: true }
+  const markerScale = useTransform(scrollYProgress, (v) => 
+    transform(v, [threshold - 0.03, threshold, threshold + 0.03], [1, 1.25, 1], { clamp: true })
   );
 
   // Card border & background styling animation
-  const cardBorder = useTransform(
-    scrollYProgress, 
-    activationRange, 
-    ['var(--border)', 'rgba(226, 169, 69, 0.5)', 'rgba(226, 169, 69, 0.2)'],
-    { clamp: true }
+  const cardBorder = useTransform(scrollYProgress, (v) => 
+    transform(v, [threshold - 0.03, threshold, threshold + 0.03], ['var(--border)', 'rgba(226, 169, 69, 0.5)', 'rgba(226, 169, 69, 0.2)'], { clamp: true })
   );
-  const cardBg = useTransform(
-    scrollYProgress, 
-    activationRange, 
-    ['transparent', 'rgba(226, 169, 69, 0.04)', 'transparent'],
-    { clamp: true }
+  const cardBg = useTransform(scrollYProgress, (v) => 
+    transform(v, [threshold - 0.03, threshold, threshold + 0.03], ['transparent', 'rgba(226, 169, 69, 0.04)', 'transparent'], { clamp: true })
   );
   
   // Shimmer effect across the top border
-  const shimmerLeft = useTransform(
-    scrollYProgress, 
-    [threshold - 0.015, threshold + 0.035], 
-    ['-20%', '120%'],
-    { clamp: true }
+  const shimmerLeft = useTransform(scrollYProgress, (v) => 
+    transform(v, [threshold - 0.015, threshold + 0.035], ['-20%', '120%'], { clamp: true })
   );
-  const shimmerOpacity = useTransform(
-    scrollYProgress, 
-    [threshold - 0.015, threshold + 0.01, threshold + 0.035], 
-    [0, 1, 0],
-    { clamp: true }
+  const shimmerOpacity = useTransform(scrollYProgress, (v) => 
+    transform(v, [threshold - 0.015, threshold + 0.01, threshold + 0.035], [0, 1, 0], { clamp: true })
   );
 
   return (
@@ -167,15 +140,30 @@ const Experience: React.FC = () => {
     offset: ["start center", "end center"]
   });
 
-  // Clamp raw scroll progress strictly to [0, 1] so negative values when above section don't corrupt spring target
-  const clampedScrollProgress = useTransform(scrollYProgress, [0, 1], [0, 1], { clamp: true });
-  
   const reducedMotion = useReducedMotion();
-  const springProgress = useSpring(clampedScrollProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
 
-  // Clamp output scaleY strictly to [0, 1] so spring physics overshoots (< 0 or > 1) never pass invalid negative pathLength to SVG
-  const rawScale = reducedMotion ? clampedScrollProgress : springProgress;
-  const scaleY = useTransform(rawScale, [0, 1], [0, 1], { clamp: true });
+  // Dynamically map scroll progress so that [0, 1] maps the viewport center from the first marker to the last marker
+  const scaleY = useTransform(scrollYProgress, (rawVal) => {
+    if (containerHeight === 0 || markerPositions.length < 2) return 0;
+    const y0 = markerPositions[0];
+    const yLast = markerPositions[markerPositions.length - 1];
+    
+    // Relative start and end positions of the markers within the container
+    const startPct = y0 / containerHeight;
+    const endPct = yLast / containerHeight;
+    const pctSpan = endPct - startPct;
+    
+    if (pctSpan <= 0) return 0;
+
+    // Map raw scroll progress [0, 1] onto the relative active span of the markers [startPct, endPct]
+    // Clamping ensures that we strictly start at the first marker and end at the last marker
+    const mapped = (rawVal - startPct) / pctSpan;
+    const clamped = Math.max(0, Math.min(1, mapped));
+    return clamped;
+  });
+
+  const springProgress = useSpring(scaleY, { stiffness: 100, damping: 30, restDelta: 0.001 });
+  const animatedScaleY = reducedMotion ? scaleY : springProgress;
 
   const setCardRef = useCallback((el: HTMLElement | null, idx: number) => {
     cardElementsRef.current[idx] = el;
@@ -263,8 +251,8 @@ const Experience: React.FC = () => {
 
   const firstY = markerPositions[0] ?? 13.5;
   const lastY = markerPositions[markerPositions.length - 1] ?? 13.5;
-  const tipY = useTransform(scaleY, [0, 1], [firstY, lastY], { clamp: true });
-  const tipOpacity = useTransform(scaleY, [0, 0.01, 0.99, 1], [0, 1, 1, 1], { clamp: true });
+  const tipY = useTransform(animatedScaleY, [0, 1], [firstY, lastY], { clamp: true });
+  const tipOpacity = useTransform(animatedScaleY, [0, 0.01, 0.99, 1], [0, 1, 1, 1], { clamp: true });
 
   return (
     <section id="experience" className="section">
@@ -304,7 +292,7 @@ const Experience: React.FC = () => {
               strokeOpacity="0.4"
               strokeLinecap="round"
               strokeLinejoin="round"
-              style={{ pathLength: scaleY }}
+              style={{ pathLength: animatedScaleY }}
               filter="url(#lightning-glow)"
             />
           )}
@@ -318,7 +306,7 @@ const Experience: React.FC = () => {
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              style={{ pathLength: reducedMotion ? 1 : scaleY }}
+              style={{ pathLength: reducedMotion ? 1 : animatedScaleY }}
             />
           )}
 
@@ -346,7 +334,7 @@ const Experience: React.FC = () => {
               isExpanded={expanded.has(exp.id)} 
               toggleExperience={toggleExperience} 
               threshold={thresholds[index] ?? (index / Math.max(1, experiences.length - 1))}
-              scrollYProgress={scaleY}
+              scrollYProgress={animatedScaleY}
               reducedMotion={reducedMotion}
               setCardRef={setCardRef}
             />
