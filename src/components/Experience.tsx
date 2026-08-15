@@ -38,8 +38,8 @@ const ExperienceItemCard = ({
   const markerShadow = useTransform(scrollYProgress, (v) => 
     transform(v, [threshold - 0.03, threshold, threshold + 0.03], [
       '0 0 0px transparent', 
-      reducedMotion ? '0 0 0px transparent' : '0 0 14px 4px rgba(226, 169, 69, 0.7)', 
-      reducedMotion ? '0 0 0px transparent' : '0 0 6px 1px rgba(226, 169, 69, 0.3)'
+      reducedMotion ? '0 0 0px transparent' : '0 0 14px 4px color-mix(in srgb, var(--accent) 70%, transparent)', 
+      reducedMotion ? '0 0 0px transparent' : '0 0 6px 1px color-mix(in srgb, var(--accent) 30%, transparent)'
     ], { clamp: true })
   );
   const markerScale = useTransform(scrollYProgress, (v) => 
@@ -48,10 +48,10 @@ const ExperienceItemCard = ({
 
   // Card border & background styling animation
   const cardBorder = useTransform(scrollYProgress, (v) => 
-    transform(v, [threshold - 0.03, threshold, threshold + 0.03], ['var(--border)', 'rgba(226, 169, 69, 0.5)', 'rgba(226, 169, 69, 0.2)'], { clamp: true })
+    transform(v, [threshold - 0.03, threshold, threshold + 0.03], ['var(--border)', 'color-mix(in srgb, var(--accent) 50%, transparent)', 'color-mix(in srgb, var(--accent) 20%, transparent)'], { clamp: true })
   );
   const cardBg = useTransform(scrollYProgress, (v) => 
-    transform(v, [threshold - 0.03, threshold, threshold + 0.03], ['transparent', 'rgba(226, 169, 69, 0.04)', 'transparent'], { clamp: true })
+    transform(v, [threshold - 0.03, threshold, threshold + 0.03], ['transparent', 'color-mix(in srgb, var(--accent) 4%, transparent)', 'transparent'], { clamp: true })
   );
   
   // Shimmer effect across the top border
