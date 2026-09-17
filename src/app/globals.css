@@ -165,28 +165,6 @@
   background: radial-gradient(circle at 72% 38%, rgba(226, 169, 69, 0.08), transparent 28%), var(--bg);
 }
 
-
-
-.hero-telemetry {
-  position: absolute;
-  top: 50%;
-  right: clamp(1.5rem, 8vw, 8rem);
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  color: var(--text-faint);
-  font-size: 0.58rem;
-  letter-spacing: 0.14em;
-  writing-mode: vertical-rl;
-  transform: translateY(-50%);
-}
-
-.hero-telemetry-line {
-  width: 1px;
-  height: 7rem;
-  background: linear-gradient(var(--accent), transparent);
-}
-
 .hero-scroll-cue {
   display: flex;
   flex-direction: column;
@@ -204,65 +182,135 @@
   pointer-events: none;
 }
 
-@media (max-width: 640px) {
-  .hero-telemetry { right: 1rem; opacity: 0.7; }
-  .hero-cockpit { opacity: 0.72; }
-  .hero-reticle { display: none; }
-}
+/* =========================================================
+   Hero — kinetic Flash composition
+   Lightning ignition + running speedster, scroll-driven.
+   Left: content · Right: character (dedicated visual zone).
+   ========================================================= */
 
-.hero-cockpit {
+.flash-stage {
   position: absolute;
   inset: 0;
-  overflow: hidden;
+  z-index: 0;
   pointer-events: none;
-  color: var(--accent);
+  overflow: visible;
 }
 
-.hero-stars {
+/* Lightning strike entering from the upper-left */
+.hero-lightning {
+  position: absolute;
+  left: clamp(1rem, 4vw, 5rem);
+  top: 12%;
+  width: clamp(2.25rem, 6vw, 4.5rem);
+  height: auto;
+  overflow: visible;
+}
+
+/* Reserved right-hand visual zone (desktop) */
+.hero-visual {
+  min-height: 20rem;
+}
+
+/* Two-column composition: content left, visual zone right */
+.hero-grid {
+  align-items: center;
+}
+
+/* Scroll + anchoring anchor for the speedster (right zone on desktop) */
+.flash-scroll {
+  position: absolute;
+  left: 72%;
+  top: 50%;
+}
+
+.flash-run {
+  will-change: transform;
+}
+
+.flash-figure {
+  position: relative;
+  width: clamp(11rem, 26vw, 18rem);
+  transform: translate(-50%, -50%);
+}
+
+.flash-runner {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+/* Speed trail streaming behind the runner, kept in the right zone */
+.flash-trail {
+  position: absolute;
+  top: 50%;
+  right: 80%;
+  width: 34vw;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(226, 169, 69, 0.06) 55%, rgba(226, 169, 69, 0.45) 100%);
+}
+
+.flash-pulse {
+  will-change: transform;
+}
+
+/* Continuous subtle electricity around the idle speedster */
+.flash-electric {
   position: absolute;
   inset: 0;
-  opacity: 0.58;
-  background-image: radial-gradient(circle, rgba(237, 237, 240, 0.8) 0 1px, transparent 1.5px), radial-gradient(circle, rgba(226, 169, 69, 0.7) 0 1px, transparent 1.5px);
-  background-size: 137px 113px, 211px 173px;
-  background-position: 13px 22px, 89px 47px;
-  mask-image: radial-gradient(ellipse at 70% 42%, black 0 25%, transparent 72%);
 }
 
-.hero-orbit {
+.flash-arc {
   position: absolute;
-  width: min(72vw, 58rem);
-  aspect-ratio: 1.9;
-  border: 1px solid rgba(226, 169, 69, 0.24);
-  border-radius: 50%;
-  transform: rotate(-18deg);
+  width: 1.7rem;
+  height: 1.7rem;
+  opacity: 0;
+  animation: arc-flicker 2.4s ease-in-out infinite;
 }
 
-.hero-orbit-primary { right: -18%; top: 14%; }
-.hero-orbit-secondary { right: -10%; top: 24%; width: min(54vw, 42rem); border-color: rgba(108, 142, 245, 0.24); transform: rotate(22deg); }
+.flash-arc-1 { top: -16%; left: -14%; }
+.flash-arc-2 { top: 16%; right: -18%; animation-delay: 0.8s; }
+.flash-arc-3 { bottom: 4%; left: -8%; animation-delay: 1.4s; }
+.flash-arc-4 { top: -10%; right: 8%; animation-delay: 0.4s; }
 
-.hero-reticle {
+@keyframes arc-flicker {
+  0%, 100% { opacity: 0; transform: scale(0.85); }
+  12% { opacity: 0.85; transform: scale(1); }
+  28% { opacity: 0.08; }
+  44% { opacity: 0.6; transform: scale(1.06); }
+  66% { opacity: 0; transform: scale(0.9); }
+}
+
+/* Brief electrical ignition wash on load */
+.hero-ignition {
   position: absolute;
-  top: 26%;
-  right: 16%;
-  width: 8rem;
-  height: 8rem;
-  border: 1px solid rgba(226, 169, 69, 0.42);
-  border-radius: 50%;
-  opacity: 0.62;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 18% 50%, rgba(226, 169, 69, 0.2), transparent 55%);
+  animation: hero-ignition 0.7s ease-out forwards;
 }
 
-.hero-reticle::before, .hero-reticle::after { content: ''; position: absolute; background: var(--accent); opacity: 0.65; }
-.hero-reticle::before { width: 1px; height: 130%; left: 50%; top: -15%; }
-.hero-reticle::after { height: 1px; width: 130%; top: 50%; left: -15%; }
-.hero-reticle i { position: absolute; width: 0.65rem; height: 0.65rem; border-color: var(--accent); }
-.hero-reticle i:nth-child(1) { left: -0.25rem; top: -0.25rem; border-left: 1px solid; border-top: 1px solid; }
-.hero-reticle i:nth-child(2) { right: -0.25rem; top: -0.25rem; border-right: 1px solid; border-top: 1px solid; }
-.hero-reticle i:nth-child(3) { left: -0.25rem; bottom: -0.25rem; border-left: 1px solid; border-bottom: 1px solid; }
-.hero-reticle i:nth-child(4) { right: -0.25rem; bottom: -0.25rem; border-right: 1px solid; border-bottom: 1px solid; }
+@keyframes hero-ignition {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
 
-.hero-hud-label { position: absolute; color: var(--text-faint); font: 0.56rem/1 var(--font-bitcount), monospace; letter-spacing: 0.18em; }
-.hero-hud-label-top { top: 18%; left: 8%; }
-.hero-hud-label-bottom { right: 10%; bottom: 23%; color: var(--accent); }
+@media (max-width: 1023px) {
+  /* Single column below lg. Content flows from the top with reserved space at
+     the bottom; the speedster anchors into that bottom space so it never
+     covers the bio or CTAs. */
+  .hero-visual { display: none; }
+  .hero-grid { align-items: start; padding-top: clamp(3.5rem, 11vh, 6rem); padding-bottom: 13rem; }
+  .flash-scroll { left: auto; right: 4%; top: auto; bottom: 7%; }
+  .flash-figure { width: 7rem; transform: none; opacity: 0.92; }
+  .flash-trail { display: none; }
+}
+
+@media (max-width: 640px) {
+  .flash-scroll { right: 2%; bottom: 5%; }
+  .flash-figure { width: 6rem; }
+}
 
 /* Flash submit feedback */
 .field-valid-icon {
